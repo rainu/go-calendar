@@ -39,13 +39,11 @@ func NewMonth(now time.Time) Month {
 
 		for {
 			targetIndex := DayOrder[iDay.Weekday()]
-
-			if iDay.Month() != now.Month() {
-				row[targetIndex] = EdgeDay(iDay.Day())
-			} else if iDay.Day() == now.Day() {
-				row[targetIndex] = CurrentDay(iDay.Day())
-			} else {
-				row[targetIndex] = Day(iDay.Day())
+			row[targetIndex] = Day{
+				edge:    iDay.Month() != now.Month(),
+				current: iDay.Day() == now.Day(),
+				special: SpecialDays.Check(iDay),
+				value:   uint(iDay.Day()),
 			}
 
 			iDay = iDay.Add(24 * time.Hour)

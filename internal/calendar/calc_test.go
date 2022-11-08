@@ -15,10 +15,10 @@ func TestNew(t *testing.T) {
 
 	assert.Equal(t, Month([][]interface{}{
 		{nil, time.Monday, time.Tuesday, time.Wednesday, time.Thursday, time.Friday, time.Saturday, time.Sunday},
-		{CalendarWeek(44), EdgeDay(31), Day(1), CurrentDay(2), Day(3), Day(4), Day(5), Day(6)},
-		{CalendarWeek(45), Day(7), Day(8), Day(9), Day(10), Day(11), Day(12), Day(13)},
-		{CalendarWeek(46), Day(14), Day(15), Day(16), Day(17), Day(18), Day(19), Day(20)},
-		{CalendarWeek(47), Day(21), Day(22), Day(23), Day(24), Day(25), Day(26), Day(27)},
-		{CalendarWeek(48), Day(28), Day(29), Day(30), EdgeDay(1), EdgeDay(2), EdgeDay(3), EdgeDay(4)},
+		{CalendarWeek(44), Day{edge: true, value: 31}, Day{value: 1}, Day{current: true, value: 2}, Day{value: 3}, Day{value: 4}, Day{value: 5}, Day{value: 6}},
+		{CalendarWeek(45), Day{value: 7}, Day{value: 8}, Day{value: 9}, Day{value: 10}, Day{value: 11}, Day{value: 12}, Day{value: 13}},
+		{CalendarWeek(46), Day{value: 14}, Day{value: 15}, Day{value: 16}, Day{value: 17}, Day{value: 18}, Day{value: 19}, Day{value: 20}},
+		{CalendarWeek(47), Day{value: 21}, Day{value: 22}, Day{value: 23}, Day{value: 24}, Day{value: 25}, Day{value: 26}, Day{value: 27}},
+		{CalendarWeek(48), Day{value: 28}, Day{value: 29}, Day{value: 30}, Day{edge: true, value: 1}, Day{edge: true, current: true, value: 2}, Day{edge: true, value: 3}, Day{edge: true, value: 4}},
 	}), result)
 }

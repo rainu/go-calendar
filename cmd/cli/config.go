@@ -5,8 +5,20 @@ import (
 	"github.com/rainu/go-calendar/internal/calendar"
 	"github.com/rainu/go-calendar/internal/ui"
 	"log"
+	"strings"
 	"time"
 )
+
+type arrayFlags []string
+
+func (i *arrayFlags) String() string {
+	return strings.Join(*i, " ")
+}
+
+func (i *arrayFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
 
 func ParseFlags() {
 	var oMonday, oTuesday, oWednesday, oThursday, oFriday, oSaturday, oSunday uint
@@ -41,6 +53,9 @@ func ParseFlags() {
 	flag.StringVar(&nOctober, "noct", ui.MonthNames[time.October], "The name for October")
 	flag.StringVar(&nNovember, "nnov", ui.MonthNames[time.November], "The name for November")
 	flag.StringVar(&nDecember, "ndec", ui.MonthNames[time.December], "The name for December")
+
+	var specialDays arrayFlags
+	flag.Var(&specialDays, "s", "A special day. YYYY-MM-DD (single); MM-DD (each year); DD (each month)")
 
 	flag.Parse()
 
@@ -82,5 +97,31 @@ func ParseFlags() {
 	}
 	if sum != 28 {
 		log.Fatal("Invalid day order setup given")
+	}
+
+	for _, day := range specialDays {
+		t, err := time.Parse("2006-01-02", day)
+		if err == nil {
+			calendar.SpecialDays.Collection = append(calendar.SpecialDays.Collection, calendar.SpecialOnce{
+				Date: t,
+			})
+		} else {
+			t, err = time.Parse("01-02", day)
+			if err == nil {
+				calendar.SpecialDays.Collection = append(calendar.SpecialDays.Collection, calendar.SpecialEachYear{
+					Day:   uint(t.Day()),
+					Month: t.Month(),
+				})
+			} else {
+				t, err = time.Parse("02", day)
+				if err == nil {
+					calendar.SpecialDays.Collection = append(calendar.SpecialDays.Collection, calendar.SpecialEachMonth{
+						Day: uint(t.Day()),
+					})
+				} else {
+					log.Fatalf("Invalid special day: %s", day)
+				}
+			}
+		}
 	}
 }

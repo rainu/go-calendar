@@ -153,27 +153,50 @@ func (f *mainFrame) update() {
 	for i, _ := range f.currentMonth {
 		for j, _ := range f.currentMonth[i] {
 			switch v := f.currentMonth[i][j].(type) {
-			case calendar.EdgeDay:
-				txt := canvas.NewText(
-					fmt.Sprintf("%d", v),
-					f.app.Settings().Theme().Color(
-						theme.ColorNamePlaceHolder,
-						f.app.Settings().ThemeVariant(),
-					),
-				)
-				txt.Alignment = fyne.TextAlignCenter
-
-				f.contentContainer.Add(txt)
 			case calendar.Day:
-				lbl := widget.NewLabel(fmt.Sprintf("%d", v))
-				lbl.Alignment = fyne.TextAlignCenter
+				if v.IsEdge() {
+					txt := canvas.NewText(
+						fmt.Sprintf("%d", v.Day()),
+						f.app.Settings().Theme().Color(
+							theme.ColorNameHover,
+							f.app.Settings().ThemeVariant(),
+						),
+					)
+					txt.Alignment = fyne.TextAlignCenter
+					if v.IsSpecial() {
+						txt.Color = f.app.Settings().Theme().Color(
+							theme.ColorNamePlaceHolder,
+							f.app.Settings().ThemeVariant(),
+						)
+					}
 
-				f.contentContainer.Add(lbl)
-			case calendar.CurrentDay:
-				btn := widget.NewButton(fmt.Sprintf("%d", v), nil)
-				btn.Disable()
+					f.contentContainer.Add(txt)
+				} else if v.IsCurrent() {
+					btn := widget.NewButton(fmt.Sprintf("%d", v.Day()), nil)
+					if v.IsSpecial() {
+						btn.Importance = widget.HighImportance
+					}
 
-				f.contentContainer.Add(btn)
+					f.contentContainer.Add(btn)
+				} else {
+					txt := canvas.NewText(
+						fmt.Sprintf("%d", v.Day()),
+						f.app.Settings().Theme().Color(
+							theme.ColorNameForeground,
+							f.app.Settings().ThemeVariant(),
+						),
+					)
+					txt.Alignment = fyne.TextAlignCenter
+
+					if v.IsSpecial() {
+						txt.Color = f.app.Settings().Theme().Color(
+							theme.ColorNamePrimary,
+							f.app.Settings().ThemeVariant(),
+						)
+					}
+
+					f.contentContainer.Add(txt)
+				}
 			case time.Weekday:
 				lbl := widget.NewLabel(DayNames[v][:2])
 				lbl.TextStyle.Bold = true
